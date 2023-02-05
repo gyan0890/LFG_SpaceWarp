@@ -192,31 +192,3 @@ contract LFGDataDAO is LFGNft{
     }
 
 }
-
-
-contract LFG_NFT is ERC721URIStorage {
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
-
-    constructor(string memory tokenName, string memory symbol) ERC721(tokenName, symbol) {
-
-    }
-
-    function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://";
-    }
-
-    function mintToken(address owner, string memory metadataURI)
-    public
-    {
-        _tokenIds.increment();
-
-        uint256 id = _tokenIds.current();
-        _safeMint(owner, id);
-        _setTokenURI(id, metadataURI);
-    }
-
-    function getNumTokens() public view returns(uint256) {
-        return _tokenIds.current();
-    }
-}
