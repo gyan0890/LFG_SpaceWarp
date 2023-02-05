@@ -67,6 +67,9 @@ contract LFGDataDAO is LFGNft{
 
     struct Course {
         uint256 courseID;
+        string courseTitle;
+        uint256 duration; //In minutes
+        string courseTopic;
         address storageProvider;
         bytes cidRaw;
         uint numAssets;
@@ -108,9 +111,12 @@ contract LFGDataDAO is LFGNft{
        return courses[courseID].proposalExpireAt > block.timestamp;
     }
 
-    function uploadCourse(bytes calldata cidraw, uint size) public returns(uint256){
+    //Upload a new course - all the course metadata is stored on-chain for now. Will move to dec-storage later
+    function uploadCourse(bytes calldata cidraw, uint size, 
+        string memory courseTitle, uint256 courseDuration, string memory courseTopic) public returns(uint256){
         courseCount = courseCount + 1;
-        Course memory course = Course(courseCount, msg.sender, cidraw, size, 0, 0, block.timestamp, block.timestamp + 180 minutes);
+        Course memory course = Course(courseCount, courseTitle, courseDuration, courseTopic, 
+            msg.sender, cidraw, size, 0, 0, block.timestamp, block.timestamp + 180 minutes);
         courses[courseCount] = course;
         courseCIDMap[courseCount] = cidraw;
         cidSet[cidraw] = true;
@@ -139,6 +145,10 @@ contract LFGDataDAO is LFGNft{
 
     function getCIDFromCourseID(uint256 courseID) public view returns(bytes memory) {
         return courseCIDMap[courseID];
+    }
+
+    function getCourseDetailsFromID(uint256 courseID) public view returns(Course memory) {
+        return courses[courseID];
     }
 
     function upvoteCIDCourse(uint256 courseID) public {
